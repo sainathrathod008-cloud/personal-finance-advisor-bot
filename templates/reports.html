@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Monthly Reports</h1><p>Summary of recorded income and expenses.</p></div>
+<section class="panel">
+<div class="table-wrap">
+<table>
+<tr><th>Year</th><th>Month</th><th>Type</th><th>Total</th></tr>
+{% for row in monthly %}
+<tr>
+<td>{{ row.year|int }}</td>
+<td>{{ row.month|int }}</td>
+<td><span class="type {{ row.transaction_type }}">{{ row.transaction_type }}</span></td>
+<td>₹{{ "%.2f"|format(row.total) }}</td>
+</tr>
+{% else %}
+<tr><td colspan="4">No report data available.</td></tr>
+{% endfor %}
+</table>
+</div>
+</section>
+{% endblock %}

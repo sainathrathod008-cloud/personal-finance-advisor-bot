@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Personal Finance Advisor Bot{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <span class="badge">FINANCE</span>
+        <span class="badge">INDIVIDUAL</span>
+        <h1>Take control of your personal finances.</h1>
+        <p>Track income, expenses, budgets and savings in one simple dashboard.</p>
+    </div>
+</section>
+
+<div class="cards">
+    <div class="card"><span>Monthly Income</span><strong>₹{{ "%.2f"|format(income) }}</strong></div>
+    <div class="card"><span>Monthly Expenses</span><strong>₹{{ "%.2f"|format(expenses) }}</strong></div>
+    <div class="card"><span>Estimated Savings</span><strong>₹{{ "%.2f"|format(savings) }}</strong></div>
+    <div class="card"><span>Savings Rate</span><strong>{{ "%.1f"|format(savings_rate) }}%</strong></div>
+</div>
+
+<div class="grid">
+    <section class="panel">
+        <h2>AI Financial Insights</h2>
+        {% for insight in insights %}
+        <div class="insight">💡 {{ insight }}</div>
+        {% endfor %}
+        <p class="muted">Insights are generated from the data stored in this demo application.</p>
+    </section>
+
+    <section class="panel">
+        <h2>Category Spending</h2>
+        {% if category_spend %}
+            {% for category, amount in category_spend.items() %}
+            <div class="progress-row">
+                <div><b>{{ category }}</b><span>₹{{ "%.2f"|format(amount) }}</span></div>
+                <div class="progress"><i style="width: {{ [amount / (expenses or 1) * 100, 100]|min }}%"></i></div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="muted">No expense data for this month.</p>
+        {% endif %}
+    </section>
+</div>
+
+<section class="panel">
+    <div class="panel-heading">
+        <h2>Budget Status</h2>
+        <a class="button" href="{{ url_for('budget') }}">Manage Budget</a>
+    </div>
+    {% if budgets %}
+    <div class="budget-list">
+        {% for b in budgets %}
+            {% set spent = category_spend.get(b.category, 0) %}
+            {% set pct = (spent / b.monthly_limit * 100) if b.monthly_limit else 0 %}
+            <div class="budget-item">
+                <div><b>{{ b.category }}</b><span>₹{{ "%.0f"|format(spent) }} / ₹{{ "%.0f"|format(b.monthly_limit) }}</span></div>
+                <div class="progress"><i class="{% if pct > 100 %}dangerbar{% endif %}" style="width: {{ [pct, 100]|min }}%"></i></div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+      <p class="muted">No budgets created yet.</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><h2>Recent Transactions</h2><a class="button" href="{{ url_for('transactions') }}">View All</a></div>
+    <div class="table-wrap">
+    <table>
+        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th></tr>
+        {% for t in recent %}
+        <tr>
+            <td>{{ t.transaction_date.strftime("%d %b %Y") }}</td>
+            <td><span class="type {{ t.transaction_type }}">{{ t.transaction_type }}</span></td>
+            <td>{{ t.category }}</td>
+            <td>{{ t.description }}</td>
+            <td>₹{{ "%.2f"|format(t.amount) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+</section>
+{% endblock %}

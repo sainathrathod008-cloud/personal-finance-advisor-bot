@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Budget{% endblock %}
+{% block content %}
+<div class="page-title"><h1>Monthly Budget</h1><p>Set spending limits for important categories.</p></div>
+
+<section class="panel">
+<h2>Add or Update Budget</h2>
+<form method="post" class="form-grid">
+    <label>Category<input name="category" placeholder="Food" required></label>
+    <label>Monthly Limit (₹)<input type="number" name="monthly_limit" step="0.01" min="0.01" required></label>
+    <button class="button primary" type="submit">Save Budget</button>
+</form>
+</section>
+
+<section class="panel">
+<h2>Budget Categories</h2>
+{% if budgets %}
+<div class="table-wrap">
+<table>
+<tr><th>Category</th><th>Monthly Limit</th><th>Action</th></tr>
+{% for b in budgets %}
+<tr>
+<td>{{ b.category }}</td>
+<td>₹{{ "%.2f"|format(b.monthly_limit) }}</td>
+<td>
+<form method="post" action="{{ url_for('delete_budget', budget_id=b.id) }}">
+<button class="link-danger">Delete</button>
+</form>
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% else %}<p class="muted">No budgets yet.</p>{% endif %}
+</section>
+{% endblock %}

@@ -5,3 +5,9 @@ __pycache__/
 instance/*.db
 .vscode/
 .idea/
+finance.db
+*.db
+instance/
+__pycache__/
+*.pyc
+.env
